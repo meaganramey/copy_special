@@ -7,7 +7,7 @@
 # http://www.apache.org/licenses/LICENSE-2.0
 
 # give credits
-__author__ = "???"
+__author__ = "Meagan Ramey"
 
 import re
 import os
@@ -19,7 +19,12 @@ import argparse
 
 def get_special_paths(dirname):
     """Given a dirname, returns a list of all its special files."""
-    # your code here
+    print(dirname)
+    for dir_path, dir_names, file_names in os.walk(dirname):
+        print('dir_name', dir_names)
+        print('dir_path', dir_path)
+        print('file_names', file_names)
+
     return
 
 
@@ -40,6 +45,8 @@ def main(args):
     parser.add_argument('--todir', help='dest dir for special files')
     parser.add_argument('--tozip', help='dest zipfile for special files')
     # TODO: add one more argument definition to parse the 'from_dir' argument
+    parser.add_argument(
+        'fromdir', help='from which dir to search for special files')
     ns = parser.parse_args(args)
 
     # TODO: you must write your own code to get the command line args.
@@ -51,6 +58,18 @@ def main(args):
     # exit(1).
 
     # Your code here: Invoke (call) your functions
+    print(ns)
+    to_dir = ns.todir
+    to_zip = ns.tozip
+    from_dir = ns.fromdir
+    if not ns:
+        parser.print_usage()
+        sys.exit(1)
+    paths = get_special_paths(from_dir)
+    if to_dir:
+        copy_to(paths, to_dir)
+    elif to_zip:
+        zip_to(paths, to_zip)
 
 
 if __name__ == "__main__":
