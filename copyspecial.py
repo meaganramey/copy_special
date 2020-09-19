@@ -19,13 +19,15 @@ import argparse
 
 def get_special_paths(dirname):
     """Given a dirname, returns a list of all its special files."""
-    print(dirname)
-    for dir_path, dir_names, file_names in os.walk(dirname):
-        print('dir_name', dir_names)
-        print('dir_path', dir_path)
-        print('file_names', file_names)
-
-    return
+    special_files = []
+    special_pattern = re.compile(r'\w*__\w+__\w*.\w*')
+    for __, __, file_names in os.walk(dirname):
+        for f in file_names:
+            m = re.match(special_pattern, f)
+            if m:
+                abs_path = os.path.abspath(f'{m[0]}')
+                special_files.append(abs_path)
+    return special_files
 
 
 def copy_to(path_list, dest_dir):
@@ -58,7 +60,6 @@ def main(args):
     # exit(1).
 
     # Your code here: Invoke (call) your functions
-    print(ns)
     to_dir = ns.todir
     to_zip = ns.tozip
     from_dir = ns.fromdir
