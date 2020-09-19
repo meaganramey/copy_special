@@ -19,25 +19,34 @@ import argparse
 
 def get_special_paths(dirname):
     """Given a dirname, returns a list of all its special files."""
+    if dirname == ".":
+        dir_abs_path = os.path.abspath(dirname)
+    else:
+        dir_abs_path = dirname
     special_files = []
-    special_pattern = re.compile(r'\w*__\w+__\w*.\w*')
-    for __, __, file_names in os.walk(dirname):
-        for f in file_names:
-            m = re.match(special_pattern, f)
-            if m:
-                abs_path = os.path.abspath(f'{m[0]}')
-                special_files.append(abs_path)
+    special_pattern = re.compile(r'\w*__\w+__\w*.*\w*')
+    for f in os.listdir(dir_abs_path):
+        m = re.match(special_pattern, f)
+        if m:
+            abs_path = os.path.join(dir_abs_path, f'{m[0]}')
+            special_files.append(abs_path)
     return special_files
 
 
 def copy_to(path_list, dest_dir):
-    # your code here
-    return
+    """Copies special files to given directory"""
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+    for path in path_list:
+        shutil.copy2(path, dest_dir)
+    return f'Your file(s) has been copied to: {dest_dir}'
 
 
 def zip_to(path_list, dest_zip):
-    # your code here
-    return
+    """Creates zip folder including files from path list"""
+    commands = ['zip', '-j', dest_zip]
+    commands.extend(path_list)
+    subprocess.run(commands)
 
 
 def main(args):
@@ -48,7 +57,8 @@ def main(args):
     parser.add_argument('--tozip', help='dest zipfile for special files')
     # TODO: add one more argument definition to parse the 'from_dir' argument
     parser.add_argument(
-        'fromdir', help='from which dir to search for special files')
+        'fromdir', help='from which dir to search for special files',
+        nargs='+')
     ns = parser.parse_args(args)
 
     # TODO: you must write your own code to get the command line args.
@@ -60,17 +70,20 @@ def main(args):
     # exit(1).
 
     # Your code here: Invoke (call) your functions
-    to_dir = ns.todir
-    to_zip = ns.tozip
-    from_dir = ns.fromdir
     if not ns:
         parser.print_usage()
         sys.exit(1)
-    paths = get_special_paths(from_dir)
-    if to_dir:
-        copy_to(paths, to_dir)
-    elif to_zip:
-        zip_to(paths, to_zip)
+    to_dir = ns.todir
+    to_zip = ns.tozip
+    dirs = ns.fromdir
+    for d in dirs:
+        paths = get_special_paths(d)
+        if to_dir:
+            copy_to(paths, to_dir)
+        elif to_zip:
+            zip_to(paths, to_zip)
+        else:
+            print('\n'.join(paths))
 
 
 if __name__ == "__main__":

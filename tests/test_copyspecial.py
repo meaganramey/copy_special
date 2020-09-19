@@ -105,6 +105,8 @@ class TestCopyspecial(unittest.TestCase):
             )
         a = sorted(actual_path_list)
         b = sorted(self.rfs.spl_file_list)
+        print("Actual path \n", a)
+        print(b)
         self.assertListEqual(
             a, b,
             "Returned path list does not match expected path list"
@@ -121,6 +123,8 @@ class TestCopyspecial(unittest.TestCase):
         # check if dest_dir was created and all files got copied
         a = sorted(os.listdir(dest_dir + "/dest"))
         b = sorted(self.rfs.file_list)
+        print('A list', a)
+        print('B list', b)
         self.clean(dest_dir)
         self.assertEqual(a, b, "The copy_to function is not working")
 
